@@ -24,7 +24,7 @@ namespace CorrectPassword.Repository
         /// установить пароль для пользователя
         /// </summary>
         /// <returns></returns>
-        void SetPasswordsUser(User usr);
+        bool SetPasswordsUser(User usr);
 
     }
 }

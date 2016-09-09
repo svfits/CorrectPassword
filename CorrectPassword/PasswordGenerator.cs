@@ -9,9 +9,15 @@ namespace CorrectPassword
 {
   public  class PasswordGenerator
     {
-        public string getPassword()
+        /// <summary>
+        //// Генератор паролей
+        /// </summary>
+        /// <param name="lengthPassword">длина пароля</param>
+        /// <param name="complexityPassword">сложность пароля</param>
+        /// <returns></returns>
+        public string getPassword(int lengthPassword, int complexityPassword)
         {
-            string password = Membership.GeneratePassword(6,1);
+            string password = Membership.GeneratePassword(lengthPassword,complexityPassword);
             return password;
         }
     }

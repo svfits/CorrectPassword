@@ -3,7 +3,7 @@ namespace CorrectPassword.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class fff2 : DbMigration
+    public partial class fdg : DbMigration
     {
         public override void Up()
         {
@@ -23,6 +23,7 @@ namespace CorrectPassword.Migrations
                 c => new
                     {
                         id = c.Int(nullable: false, identity: true),
+                        loginUser = c.String(),
                         description = c.String(),
                         password = c.String(),
                         passwordСomplexity = c.Int(nullable: false),

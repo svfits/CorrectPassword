@@ -26,11 +26,11 @@ namespace CorrectPassword.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\User.mdf;Inte" +
-            "grated Security=True;Connect Timeout=30")]
-        public string Setting {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=C:\\PROGECT\\CORRECTPASSWORD\\COR" +
+            "RECTPASSWORD\\BIN\\DEBUG\\USER.MDF;Integrated Security=True")]
+        public string SqlExpress {
             get {
-                return ((string)(this["Setting"]));
+                return ((string)(this["SqlExpress"]));
             }
         }
     }

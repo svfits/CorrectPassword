@@ -12,7 +12,7 @@ namespace CorrectPassword.ContextLocalDb
 {
   public   class UserContext : DbContext
     {
-        public UserContext() : base("CorrectPassword.Properties.Settings.Setting") { }
+        public UserContext() : base("CorrectPassword.Properties.Settings.SqlExpress") { }
 
         public DbSet<User> Users { get; set; }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CorrectPassword.UserPasswordsSettings;
 
 namespace CorrectPassword.Repository
 {
@@ -12,19 +13,19 @@ namespace CorrectPassword.Repository
         /// параметры пользователя
         /// </summary>
         /// <returns>возвращает список параметров пользователя</returns>
-        List<User> GetParametrUser(string namePC);
-      
+        User GetParametrUser(string namePC);    
 
         /// <summary>
-        /// удачно ли сохранился пароль на сервере
+        /// получение дефолтного пользователя
         /// </summary>
         /// <returns></returns>
-        Boolean ValidPasswords(string namePC, string password);
+        UserPasswordsDefault GetParametrDefaultUser();
+
         /// <summary>
         /// установить пароль для пользователя
         /// </summary>
         /// <returns></returns>
-        bool SetPasswordsUser(User usr);
+        bool SetPasswordsUser(string defaultLoginUser, string newPassword);
 
     }
 }

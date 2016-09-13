@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.DirectoryServices;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -10,13 +11,13 @@ using System.Threading.Tasks;
 
 namespace CorrectPassword
 {
-    public static class GetPcAttributes
+    public static class GetSetPcUserAttributes
     {
         /// <summary>
         ////имя машины
         /// </summary>
         /// <returns></returns>
-        public static string _namePc()
+        public static string namePc()
         {
             return Environment.MachineName;
         }
@@ -25,7 +26,7 @@ namespace CorrectPassword
         /// локальный ip адрес выбираем только которые начинаются 10
         /// </summary>
         /// <returns></returns>
-        public static  string GetLocalIPAddress()
+        public static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in host.AddressList)
@@ -57,27 +58,58 @@ namespace CorrectPassword
             foreach (object groupMember in (IEnumerable)members)
             {
                 DirectoryEntry member = new DirectoryEntry(groupMember);
-                lstUsers.Add(member.Name);                
+                lstUsers.Add(member.Name);
             }
 
             return lstUsers;
         }
 
-        public static Boolean SetPasswordSetUser(string password, string userName, string group)
+        public static Boolean addUser(string password, string userName, string groups)
+        {
+            try
+            {
+                PrincipalContext context = new PrincipalContext(ContextType.Machine);
+                UserPrincipal user = new UserPrincipal(context);
+                user.SetPassword("passwordpassword1234!");
+                user.DisplayName = "Semenov";
+                user.Name = "semenov";
+                user.Description = "просто тестовый пользователь";
+                user.UserCannotChangePassword = true;
+                user.PasswordNeverExpires = true;
+              
+                user.Save();
+
+                //now add user to "Users" group so it displays in Control Panel
+                GroupPrincipal group = GroupPrincipal.FindByIdentity(context, "Администраторы");
+                group.Members.Add(user);
+                group.Save();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error creating account: {0}", ex.Message);
+                return false;
+            }
+            
+        }
+
+        public static Boolean setUserPassword(string user, string password)
         {
             try
             {
                 DirectoryEntry localMachine = new DirectoryEntry("WinNT://" + Environment.MachineName);
-                DirectoryEntry admGroup = localMachine.Children.Find("Администраторы", "group");
-
-                admGroup.Invoke("Add", new object[] { "WinNT://" + Environment.MachineName + "/" + "Semenov" });
-                admGroup.CommitChanges();
+                DirectoryEntry _user = localMachine.Children.Find(user, "user");               
+                _user.Password = password;
+                _user.CommitChanges();
+                 
+                return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-            }
-            return true;
+                Console.WriteLine("Error creating account: {0}", ex.Message);
+                return false;
+            }          
         }
 
     }

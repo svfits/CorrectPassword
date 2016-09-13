@@ -27,5 +27,10 @@ namespace CorrectPassword.UserPasswordsSettings
         /// время жизни пароля
         /// </summary>
         public int passwordLifeTime { get; set; }
+
+        /// <summary>
+        /// дефолтный логин 
+        /// </summary>
+        public string defaultLoginUser { get; set; }
     }
 }

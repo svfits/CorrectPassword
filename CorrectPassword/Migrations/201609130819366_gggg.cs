@@ -3,7 +3,7 @@ namespace CorrectPassword.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class fdg : DbMigration
+    public partial class gggg : DbMigration
     {
         public override void Up()
         {
@@ -15,6 +15,7 @@ namespace CorrectPassword.Migrations
                         passwordСomplexity = c.Int(nullable: false),
                         passwordLength = c.Int(nullable: false),
                         passwordLifeTime = c.Int(nullable: false),
+                        defaultLoginUser = c.String(),
                     })
                 .PrimaryKey(t => t.id);
             
@@ -32,6 +33,7 @@ namespace CorrectPassword.Migrations
                         namePc = c.String(),
                         ipPC = c.String(),
                         correctDateTime = c.DateTime(nullable: false),
+                        stampDateTimeLoadPc = c.DateTime(nullable: false),
                     })
                 .PrimaryKey(t => t.id);
             

@@ -7,13 +7,13 @@ namespace CorrectPassword.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class fdg : IMigrationMetadata
+    public sealed partial class gggg : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(fdg));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(gggg));
         
         string IMigrationMetadata.Id
         {
-            get { return "201609070835246_fdg"; }
+            get { return "201609130819366_gggg"; }
         }
         
         string IMigrationMetadata.Source

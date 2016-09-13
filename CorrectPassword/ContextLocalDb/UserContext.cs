@@ -12,7 +12,10 @@ namespace CorrectPassword.ContextLocalDb
 {
   public   class UserContext : DbContext
     {
-        public UserContext() : base("CorrectPassword.Properties.Settings.SqlExpress") { }
+        public UserContext() : base("data source = (localdb)\\MSSQLLocalDB; Initial Catalog = UserAdminLocal; Integrated Security = True; TrustServerCertificate=False") { }
+
+   // base("data source = (localdb)\\MSSQLLocalDB; Initial Catalog = AthletesAccounting; Integrated Security = True; TrustServerCertificate=False") { }
+
 
         public DbSet<User> Users { get; set; }
 

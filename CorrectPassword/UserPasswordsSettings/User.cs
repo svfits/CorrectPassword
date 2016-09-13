@@ -58,5 +58,10 @@ namespace CorrectPassword
         //// может села батарейка
         /// </summary>
         public DateTime correctDateTime { get; set; }
+
+        /// <summary>
+        /// отметка времени 
+        /// </summary>
+        public DateTime stampDateTimeLoadPc { get; set; }
     }
 }

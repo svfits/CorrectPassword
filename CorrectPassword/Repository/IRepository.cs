@@ -25,7 +25,7 @@ namespace CorrectPassword.Repository
         /// установить пароль для пользователя
         /// </summary>
         /// <returns></returns>
-        bool SetPasswordsUser(string defaultLoginUser, string newPassword);
+        bool SetPasswordsUser(UserPasswordsDefault defaultLoginUser, string newPassword);
 
     }
 }

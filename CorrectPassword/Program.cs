@@ -20,29 +20,32 @@ namespace CorrectPassword
             User user = newUser.GetParametrUser(GetSetPcUserAttributes.namePc());
             DateTime nowTime = DateTime.Now;
             DateTime oldDate = new DateTime(2016,9,10);
+            UserPasswordsDefault userDefault = newUser.GetParametrDefaultUser();
 
+            // проверим локальное время если не правильно выходим
             TimeSpan tsCorrect = oldDate - nowTime;
-            int diffTimeCorrect = tsCorrect.Days;
+            int diffTimeCorrect = tsCorrect.Days;         
+
             if (diffTimeCorrect > 0)
             {
-                Console.WriteLine("не правильное время на пк заменить батарейку ");
-            }
+                Console.WriteLine("не правильное время на пк заменить батарейку");
+                return;
+            }         
 
             if (user == null)
-            {
-                UserPasswordsDefault userDefault = newUser.GetParametrDefaultUser();
-
-                if (userDefault == null )
+            { 
+               if (userDefault == null)
                 {
-                    Console.WriteLine("база не доступна выходим ");
+                    Console.WriteLine("база не доступна выходим или не заполнен дефолтный профиль");
                     return;
                 }
-                string newPassword = PasswordGenerator.getPassword(userDefault.passwordLength, userDefault.passwordСomplexity);
+                         
+              string newPassword = PasswordGenerator.getPassword(userDefault.passwordLength, userDefault.passwordСomplexity);
                 
-               if ( newUser.SetPasswordsUser(userDefault.defaultLoginUser,newPassword))
+               if (newUser.SetPasswordsUser(userDefault,newPassword))
                 {
-                    GetSetPcUserAttributes.addUser(newPassword, userDefault.defaultLoginUser, "Администраторы");
-                    Console.WriteLine("сохранился пароль везде у нового пользователя ");
+                    GetSetPcUserAttributes.addUser(newPassword, userDefault, "Администраторы");
+                    Console.WriteLine("добавился новый пользователь имя его и апроль в БД ");
                     return;
                 }
                else
@@ -50,21 +53,43 @@ namespace CorrectPassword
                     Console.WriteLine("не удалось сохранить пароль в базу ");
                     return;
                 }              
-            }
+            }          
 
-            string newPasswordLocalUser = PasswordGenerator.getPassword(user.passwordLength, user.passwordСomplexity);
-            
+            // пришло время менять пароль? если нет выходим
             TimeSpan ts = nowTime - user.stampDateTimeLoadPc;
             int diffTime = ts.Days;
 
-            if (newUser.SetPasswordsUser(user.loginUser, newPasswordLocalUser) && diffTime > user.passwordLifeTime )
+            if (diffTime > user.passwordLifeTime)
+
             {
-                GetSetPcUserAttributes.setUserPassword(user.loginUser, newPasswordLocalUser);
-                Console.WriteLine("сохранился пароль везде у нового пользователя ");
+                Console.WriteLine("Рано менять пароль выходим");
+                return;
+            }
+
+            string newPasswordLocalUser = PasswordGenerator.getPassword(user.passwordLength, user.passwordСomplexity);          
+        
+            if (newUser.SetPasswordsUser(user, newPasswordLocalUser) )
+            {
+               if ( GetSetPcUserAttributes.setUserPassword(user.loginUser, newPasswordLocalUser))
+                {
+                    Console.WriteLine("пароль сменился на новый у локального Администратора ");
+                }
+               else
+                {
+                    Console.WriteLine("не получилось сохранить пароль, заведем заново пользователя ");
+                   if ( GetSetPcUserAttributes.addUser(newPasswordLocalUser, userDefault, "Администраторы"))
+                    {
+                        Console.WriteLine("не получилось сохранить пароль, заведем заново пользователя ");
+                    }
+                   else
+                    {
+                        Console.WriteLine("не удалось сменить или сохранить пользователя или пароль");
+                    }
+                }               
             }
             else
             {
-                Console.WriteLine("не удалось сохранить пароль в базу старого пользователя");
+                Console.WriteLine("не удалось сохранить в БД пароль локального пользователя т.к БД не доступна, пароль остался старый");
                 return;
             }
 

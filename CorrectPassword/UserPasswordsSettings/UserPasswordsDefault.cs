@@ -32,5 +32,10 @@ namespace CorrectPassword.UserPasswordsSettings
         /// дефолтный логин 
         /// </summary>
         public string defaultLoginUser { get; set; }
+
+        /// <summary>
+        /// описание
+        /// </summary>
+        public string description { get; set; }
     }
 }

@@ -52,13 +52,7 @@ namespace CorrectPassword
         ////ip адресс пк 
         /// </summary>
         public string ipPC { get; set; }
-
-        /// <summary>
-        //// нужно проверять текущее время пк и сервера,
-        //// может села батарейка
-        /// </summary>
-        public DateTime correctDateTime { get; set; }
-
+          
         /// <summary>
         /// отметка времени 
         /// </summary>

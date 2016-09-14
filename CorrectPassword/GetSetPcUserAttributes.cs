@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CorrectPassword.UserPasswordsSettings;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.DirectoryServices;
@@ -64,23 +65,24 @@ namespace CorrectPassword
             return lstUsers;
         }
 
-        public static Boolean addUser(string password, string userName, string groups)
+        public static Boolean addUser(string password, UserPasswordsDefault defaultLoginUser, string groups)
         {
+         
             try
             {
                 PrincipalContext context = new PrincipalContext(ContextType.Machine);
+                GroupPrincipal group = GroupPrincipal.FindByIdentity(context, groups);
                 UserPrincipal user = new UserPrincipal(context);
-                user.SetPassword("passwordpassword1234!");
-                user.DisplayName = "Semenov";
-                user.Name = "semenov";
-                user.Description = "просто тестовый пользователь";
+                user.SetPassword(password);
+                user.DisplayName = defaultLoginUser.defaultLoginUser;
+                user.Name = defaultLoginUser.defaultLoginUser;
+                user.Description = defaultLoginUser.description;
                 user.UserCannotChangePassword = true;
                 user.PasswordNeverExpires = true;
-              
+                user.Enabled = true;              
+                              
                 user.Save();
 
-                //now add user to "Users" group so it displays in Control Panel
-                GroupPrincipal group = GroupPrincipal.FindByIdentity(context, "Администраторы");
                 group.Members.Add(user);
                 group.Save();
 
@@ -100,7 +102,7 @@ namespace CorrectPassword
             {
                 DirectoryEntry localMachine = new DirectoryEntry("WinNT://" + Environment.MachineName);
                 DirectoryEntry _user = localMachine.Children.Find(user, "user");               
-                _user.Password = password;
+                _user.Password = password;                
                 _user.CommitChanges();
                  
                 return true;

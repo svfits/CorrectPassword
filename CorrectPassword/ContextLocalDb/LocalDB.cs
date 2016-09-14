@@ -48,14 +48,59 @@ namespace CorrectPassword.Repository
             }
         }
         /// <summary>
-        ///  сохранить пароль в базе
+        ///  сохранить пароль в базе нового пользователя
         /// </summary>
         /// <param name="defaultLoginUser"></param>
         /// <param name="newPassword"></param>
         /// <param name="getLocalIPAddress"></param>
         /// <param name="_namePc"></param>
         /// <returns></returns>
-       public bool SetPasswordsUser(string defaultLoginUser, string newPassword)
+       public bool SetPasswordsUser(UserPasswordsDefault defaultLoginUser, string newPassword)
+        {
+            string _namePc = GetSetPcUserAttributes.namePc();
+            string _ip = GetSetPcUserAttributes.GetLocalIPAddress();
+            try
+            {
+                using (UserContext db = new UserContext())
+                {
+                    var conn = db.Users
+                        .AsEnumerable()
+                        .Where(c => c.namePc == _namePc)
+                        .FirstOrDefault()
+                        ;
+
+                    if (conn == null)
+                    {
+                        db.Users.Add(new User
+                        {
+                            ipPC = _ip,
+                            namePc = _namePc,
+                            password = newPassword,
+                            passwordСomplexity = 1,
+                            loginUser = defaultLoginUser.defaultLoginUser,
+                            stampDateTimeLoadPc = DateTime.Now,                           
+                            passwordLength = defaultLoginUser.passwordLength,
+                            passwordLifeTime = defaultLoginUser.passwordLifeTime
+                        });
+                    }                 
+
+                    db.SaveChanges();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+        /// <summary>
+        /// сохранить пароль старого пользователя
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="newPasswordLocalUser"></param>
+        /// <returns></returns>
+        internal bool SetPasswordsUser(User user, string newPasswordLocalUser)
         {
             string _namePc = GetSetPcUserAttributes.namePc();
             string _ip = GetSetPcUserAttributes.GetLocalIPAddress();
@@ -70,26 +115,18 @@ namespace CorrectPassword.Repository
                         ;
 
                     if (conn != null)
-                    {
-                        conn.password = newPassword;
-                        conn.stampDateTimeLoadPc = DateTime.Now;                        
+                    {                       
+                        conn.stampDateTimeLoadPc = DateTime.Now;
                         conn.ipPC = _ip;
+                        conn.password = newPasswordLocalUser;
+                        conn.passwordСomplexity = user.passwordСomplexity;
+                        conn.loginUser = user.loginUser;
+                        conn.stampDateTimeLoadPc = DateTime.Now;                       
+                        conn.passwordLength = user.passwordLength;
+                        conn.passwordLifeTime = user.passwordLifeTime;
 
                         db.Entry(conn).State = System.Data.Entity.EntityState.Modified;
-                    }
-                    else
-                    {
-                        db.Users.Add(new User
-                        {
-                            ipPC = _ip,
-                            namePc = _namePc,
-                            password = newPassword,
-                            passwordСomplexity = 1,
-                            loginUser = defaultLoginUser,
-                            stampDateTimeLoadPc = DateTime.Now,
-                            correctDateTime = DateTime.Now                            
-                        });
-                    }
+                    }                  
 
                     db.SaveChanges();
                     return true;
@@ -100,7 +137,7 @@ namespace CorrectPassword.Repository
                 Console.WriteLine(ex);
                 return false;
             }
-        }    
+        }
 
         /// <summary>
         /// проверка пароля в базе, ну если очень хочется
@@ -108,7 +145,7 @@ namespace CorrectPassword.Repository
         /// <param name="namePC"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-    public  Boolean ValidPasswords(string namePC, string password)
+        public  Boolean ValidPasswords(string namePC, string password)
         {
             try
             {
@@ -130,6 +167,6 @@ namespace CorrectPassword.Repository
             {
                 return false;
             }
-        }      
+        }     
     }
 }

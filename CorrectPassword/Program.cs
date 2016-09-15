@@ -17,7 +17,7 @@ namespace CorrectPassword
         {
 
             LocalDb newUser = new LocalDb();
-            User user = newUser.GetParametrUser(GetSetPcUserAttributes.namePc());
+            User user = newUser.GetParametrUser();
             DateTime nowTime = DateTime.Now;
             DateTime oldDate = new DateTime(2016,9,10);
             UserPasswordsDefault userDefault = newUser.GetParametrDefaultUser();
@@ -42,15 +42,25 @@ namespace CorrectPassword
                          
               string newPassword = PasswordGenerator.getPassword(userDefault.passwordLength, userDefault.passwordСomplexity);
                 
-               if (newUser.SetPasswordsUser(userDefault,newPassword))
+               if (newUser.AddPasswordsUser(userDefault,newPassword))
                 {
-                    GetSetPcUserAttributes.addUser(newPassword, userDefault, "Администраторы");
-                    Console.WriteLine("добавился новый пользователь имя его и апроль в БД ");
-                    return;
+                   if ( GetSetPcUserAttributes.addUser(newPassword, userDefault, "Администраторы") )
+                    {
+                        Console.WriteLine("добавился новый пользователь имя его и пароль в БД ");
+                        newUser.setStatus(true);
+                        return;
+                    }
+                   else
+                    {
+                        Console.WriteLine("не удалось добавить пользователя ");
+                        newUser.setStatus(false);
+                        return;
+                    }
+
                 }
                else
                 {
-                    Console.WriteLine("не удалось сохранить пароль в базу ");
+                    Console.WriteLine("не удалось сохранить пароль в базу ничего не изменилось ");
                     return;
                 }              
             }          
@@ -59,7 +69,7 @@ namespace CorrectPassword
             TimeSpan ts = nowTime - user.stampDateTimeLoadPc;
             int diffTime = ts.Days;
 
-            if (diffTime > user.passwordLifeTime)
+            if (diffTime >= user.passwordLifeTime)
 
             {
                 Console.WriteLine("Рано менять пароль выходим");
@@ -68,22 +78,25 @@ namespace CorrectPassword
 
             string newPasswordLocalUser = PasswordGenerator.getPassword(user.passwordLength, user.passwordСomplexity);          
         
-            if (newUser.SetPasswordsUser(user, newPasswordLocalUser) )
+            if (newUser.AddPasswordsUser(user, newPasswordLocalUser) )
             {
                if ( GetSetPcUserAttributes.setUserPassword(user.loginUser, newPasswordLocalUser))
                 {
                     Console.WriteLine("пароль сменился на новый у локального Администратора ");
+                    newUser.setStatus(true);
                 }
                else
                 {
                     Console.WriteLine("не получилось сохранить пароль, заведем заново пользователя ");
                    if ( GetSetPcUserAttributes.addUser(newPasswordLocalUser, userDefault, "Администраторы"))
                     {
-                        Console.WriteLine("не получилось сохранить пароль, заведем заново пользователя ");
+                        Console.WriteLine("новый пользователь добавлен пароль и логин в БД ");
+                        newUser.setStatus(true);
                     }
                    else
                     {
-                        Console.WriteLine("не удалось сменить или сохранить пользователя или пароль");
+                        Console.WriteLine("не удалось сменить пароль или добавить пользователя пометим как status false");
+                        newUser.setStatus(false);
                     }
                 }               
             }

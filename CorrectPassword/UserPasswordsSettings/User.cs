@@ -57,5 +57,10 @@ namespace CorrectPassword
         /// отметка времени 
         /// </summary>
         public DateTime stampDateTimeLoadPc { get; set; }
+
+        /// <summary>
+        ////статус совпадают ли пароли на сервере и локально
+        /// </summary>
+        public Boolean? status { get; set; }
     }
 }

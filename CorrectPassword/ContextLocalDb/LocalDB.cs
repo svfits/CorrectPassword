@@ -9,18 +9,20 @@ namespace CorrectPassword.Repository
 {
     public class LocalDb : IRepository
     {
+        string _namePc = GetSetPcUserAttributes.namePc();
+        string _ip = GetSetPcUserAttributes.GetLocalIPAddress();
         /// <summary>
         /// если параметры для уже созданого пользователя
         /// </summary>
         /// <param name="namePC"></param>
         /// <returns></returns>
-    public  User GetParametrUser(string namePC)
+        public  User GetParametrUser()
         {
             try
             {
                 using (UserContext db = new UserContext())
                 {
-                    return db.Users.Where(c => c.namePc == namePC).FirstOrDefault();
+                    return db.Users.Where(c => c.namePc == _namePc && c.status == true).FirstOrDefault();
                 }
             }
             catch
@@ -55,22 +57,12 @@ namespace CorrectPassword.Repository
         /// <param name="getLocalIPAddress"></param>
         /// <param name="_namePc"></param>
         /// <returns></returns>
-       public bool SetPasswordsUser(UserPasswordsDefault defaultLoginUser, string newPassword)
-        {
-            string _namePc = GetSetPcUserAttributes.namePc();
-            string _ip = GetSetPcUserAttributes.GetLocalIPAddress();
+       public bool AddPasswordsUser(UserPasswordsDefault defaultLoginUser, string newPassword)
+        {           
             try
             {
                 using (UserContext db = new UserContext())
-                {
-                    var conn = db.Users
-                        .AsEnumerable()
-                        .Where(c => c.namePc == _namePc)
-                        .FirstOrDefault()
-                        ;
-
-                    if (conn == null)
-                    {
+                {                  
                         db.Users.Add(new User
                         {
                             ipPC = _ip,
@@ -80,10 +72,10 @@ namespace CorrectPassword.Repository
                             loginUser = defaultLoginUser.defaultLoginUser,
                             stampDateTimeLoadPc = DateTime.Now,                           
                             passwordLength = defaultLoginUser.passwordLength,
-                            passwordLifeTime = defaultLoginUser.passwordLifeTime
+                            passwordLifeTime = defaultLoginUser.passwordLifeTime,
+                            status = false
                         });
-                    }                 
-
+                                
                     db.SaveChanges();
                     return true;
                 }
@@ -100,33 +92,21 @@ namespace CorrectPassword.Repository
         /// <param name="user"></param>
         /// <param name="newPasswordLocalUser"></param>
         /// <returns></returns>
-        internal bool SetPasswordsUser(User user, string newPasswordLocalUser)
-        {
-            string _namePc = GetSetPcUserAttributes.namePc();
-            string _ip = GetSetPcUserAttributes.GetLocalIPAddress();
+        public bool AddPasswordsUser(User user, string newPasswordLocalUser)
+        {         
             try
             {
                 using (UserContext db = new UserContext())
-                {
-                    var conn = db.Users
-                        .AsEnumerable()
-                        .Where(c => c.namePc == _namePc)
-                        .FirstOrDefault()
-                        ;
-
-                    if (conn != null)
-                    {                       
-                        conn.stampDateTimeLoadPc = DateTime.Now;
-                        conn.ipPC = _ip;
-                        conn.password = newPasswordLocalUser;
-                        conn.passwordСomplexity = user.passwordСomplexity;
-                        conn.loginUser = user.loginUser;
-                        conn.stampDateTimeLoadPc = DateTime.Now;                       
-                        conn.passwordLength = user.passwordLength;
-                        conn.passwordLifeTime = user.passwordLifeTime;
-
-                        db.Entry(conn).State = System.Data.Entity.EntityState.Modified;
-                    }                  
+                {                   
+                    db.Users.Add(new User {
+                        stampDateTimeLoadPc = DateTime.Now,
+                        ipPC = _ip,
+                        password = newPasswordLocalUser,
+                        passwordСomplexity = user.passwordСomplexity,
+                        passwordLifeTime = user.passwordLifeTime,
+                        passwordLength = user.passwordLength,
+                        loginUser = user.loginUser
+                    });                 
 
                     db.SaveChanges();
                     return true;
@@ -140,18 +120,18 @@ namespace CorrectPassword.Repository
         }
 
         /// <summary>
-        /// проверка пароля в базе, ну если очень хочется
+        /// установить статус в БД что все БД = локально
         /// </summary>
         /// <param name="namePC"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public  Boolean ValidPasswords(string namePC, string password)
+        public  Boolean setStatus(Boolean status)
         {
             try
             {
                 using (UserContext db = new UserContext())
                 {
-                    var conn = db.Users.Where(c => c.namePc == namePC && c.password == password).ToList();
+                    var conn = db.Users.Where(c => c.namePc == _namePc).Last();
 
                     if (conn == null)
                     {
@@ -159,6 +139,9 @@ namespace CorrectPassword.Repository
                     }
                     else
                     {
+                        conn.status = status;
+                        db.Entry(conn).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
                         return true;
                     }
                 }                
@@ -170,3 +153,4 @@ namespace CorrectPassword.Repository
         }     
     }
 }
+

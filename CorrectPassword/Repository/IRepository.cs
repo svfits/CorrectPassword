@@ -8,12 +8,12 @@ using CorrectPassword.UserPasswordsSettings;
 namespace CorrectPassword.Repository
 {
     interface IRepository
-    {
+    {       
         /// <summary>
         /// параметры пользователя
         /// </summary>
         /// <returns>возвращает список параметров пользователя</returns>
-        User GetParametrUser(string namePC);    
+        User GetParametrUser();    
 
         /// <summary>
         /// получение дефолтного пользователя
@@ -25,7 +25,13 @@ namespace CorrectPassword.Repository
         /// установить пароль для пользователя
         /// </summary>
         /// <returns></returns>
-        bool SetPasswordsUser(UserPasswordsDefault defaultLoginUser, string newPassword);
+        bool AddPasswordsUser(UserPasswordsDefault defaultLoginUser, string newPassword);
+        /// <summary>
+        ////установить статус нового пользователя
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        Boolean setStatus(Boolean status);
 
     }
 }

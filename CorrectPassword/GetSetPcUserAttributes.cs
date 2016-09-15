@@ -67,11 +67,10 @@ namespace CorrectPassword
 
         public static Boolean addUser(string password, UserPasswordsDefault defaultLoginUser, string groups)
         {
-         
             try
             {
                 PrincipalContext context = new PrincipalContext(ContextType.Machine);
-                GroupPrincipal group = GroupPrincipal.FindByIdentity(context, groups);
+                
                 UserPrincipal user = new UserPrincipal(context);
                 user.SetPassword(password);
                 user.DisplayName = defaultLoginUser.defaultLoginUser;
@@ -79,9 +78,13 @@ namespace CorrectPassword
                 user.Description = defaultLoginUser.description;
                 user.UserCannotChangePassword = true;
                 user.PasswordNeverExpires = true;
-                user.Enabled = true;              
-                              
+
+                user.Enabled = true;
+                
                 user.Save();
+
+                PrincipalContext context2 = new PrincipalContext(ContextType.Machine);
+                GroupPrincipal group = GroupPrincipal.FindByIdentity(context2, "Операторы настройки сети");
 
                 group.Members.Add(user);
                 group.Save();
@@ -93,7 +96,7 @@ namespace CorrectPassword
                 Console.WriteLine("Error creating account: {0}", ex.Message);
                 return false;
             }
-            
+
         }
 
         public static Boolean setUserPassword(string user, string password)

@@ -12,9 +12,9 @@ namespace CorrectPassword.ContextLocalDb
 {
   public   class UserContext : DbContext
     {
-        public UserContext() : base("data source = (localdb)\\MSSQLLocalDB; Initial Catalog = UserAdminLocal; Integrated Security = True; TrustServerCertificate=False") { }
+        public UserContext() : base("data source = localhost; Initial Catalog = UserAdminLocal; Integrated Security = True; TrustServerCertificate=False") { }
 
-   // base("data source = (localdb)\\MSSQLLocalDB; Initial Catalog = AthletesAccounting; Integrated Security = True; TrustServerCertificate=False") { }
+        // base("data source = (localdb)\\MSSQLLocalDB; Initial Catalog = AthletesAccounting; Integrated Security = True; TrustServerCertificate=False") { }
 
 
         public DbSet<User> Users { get; set; }

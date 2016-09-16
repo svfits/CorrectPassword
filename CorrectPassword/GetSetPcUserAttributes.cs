@@ -7,7 +7,9 @@ using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Principal;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CorrectPassword
@@ -70,7 +72,7 @@ namespace CorrectPassword
             try
             {
                 PrincipalContext context = new PrincipalContext(ContextType.Machine);
-                
+
                 UserPrincipal user = new UserPrincipal(context);
                 user.SetPassword(password);
                 user.DisplayName = defaultLoginUser.defaultLoginUser;
@@ -80,15 +82,15 @@ namespace CorrectPassword
                 user.PasswordNeverExpires = true;
 
                 user.Enabled = true;
-                
+
                 user.Save();
 
                 PrincipalContext context2 = new PrincipalContext(ContextType.Machine);
-                GroupPrincipal group = GroupPrincipal.FindByIdentity(context2, "Операторы настройки сети");
+                GroupPrincipal group = GroupPrincipal.FindByIdentity(context2, groups);
 
                 group.Members.Add(user);
                 group.Save();
-
+             
                 return true;
             }
             catch (Exception ex)

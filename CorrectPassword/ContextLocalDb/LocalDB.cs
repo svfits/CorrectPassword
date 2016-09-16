@@ -100,6 +100,7 @@ namespace CorrectPassword.Repository
                 {                   
                     db.Users.Add(new User {
                         stampDateTimeLoadPc = DateTime.Now,
+                        namePc = _namePc,
                         ipPC = _ip,
                         password = newPasswordLocalUser,
                         passwordСomplexity = user.passwordСomplexity,

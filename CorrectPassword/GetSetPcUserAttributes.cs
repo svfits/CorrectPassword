@@ -1,7 +1,9 @@
-﻿using CorrectPassword.UserPasswordsSettings;
+﻿using CorrectPassword.Log;
+using CorrectPassword.UserPasswordsSettings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
@@ -90,12 +92,13 @@ namespace CorrectPassword
 
                 group.Members.Add(user);
                 group.Save();
-             
+
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error creating account: {0}", ex.Message);
+                LogLocal.addLocalLog(ex.Message, EventLogEntryType.Error);
                 return false;
             }
 
@@ -115,6 +118,7 @@ namespace CorrectPassword
             catch (Exception ex)
             {
                 Console.WriteLine("Error creating account: {0}", ex.Message);
+                LogLocal.addLocalLog(ex.Message, EventLogEntryType.Error);
                 return false;
             }          
         }

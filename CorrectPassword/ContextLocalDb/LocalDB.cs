@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using CorrectPassword.Repository;
+using CorrectPassword.Log;
+using System.Diagnostics;
 
 namespace CorrectPassword.Repository
 {
@@ -22,7 +24,7 @@ namespace CorrectPassword.Repository
             {
                 using (UserContext db = new UserContext())
                 {
-                    return db.Users.Where(c => c.namePc == _namePc && c.status == true).FirstOrDefault();
+                    return db.Users.Where(c => c.namePc == _namePc && c.status == true).AsEnumerable().Last();
                 }
             }
             catch
@@ -73,7 +75,8 @@ namespace CorrectPassword.Repository
                             stampDateTimeLoadPc = DateTime.Now,                           
                             passwordLength = defaultLoginUser.passwordLength,
                             passwordLifeTime = defaultLoginUser.passwordLifeTime,
-                            status = false
+                            status = false,
+                            description = defaultLoginUser.description
                         });
                                 
                     db.SaveChanges();
@@ -83,6 +86,7 @@ namespace CorrectPassword.Repository
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                LogLocal.addLocalLog(ex.Message, EventLogEntryType.Error);
                 return false;
             }
         }
@@ -106,7 +110,8 @@ namespace CorrectPassword.Repository
                         passwordСomplexity = user.passwordСomplexity,
                         passwordLifeTime = user.passwordLifeTime,
                         passwordLength = user.passwordLength,
-                        loginUser = user.loginUser
+                        loginUser = user.loginUser,
+                        description = user.description
                     });                 
 
                     db.SaveChanges();
@@ -116,6 +121,7 @@ namespace CorrectPassword.Repository
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                LogLocal.addLocalLog(ex.Message, EventLogEntryType.Error);
                 return false;
             }
         }
@@ -132,7 +138,7 @@ namespace CorrectPassword.Repository
             {
                 using (UserContext db = new UserContext())
                 {
-                    var conn = db.Users.Where(c => c.namePc == _namePc).Last();
+                    var conn = db.Users.Where(c => c.namePc == _namePc).AsEnumerable().Last();
 
                     if (conn == null)
                     {
@@ -147,8 +153,9 @@ namespace CorrectPassword.Repository
                     }
                 }                
             }
-            catch
+            catch (Exception ex)
             {
+                LogLocal.addLocalLog(ex.Message, EventLogEntryType.Error);
                 return false;
             }
         }     

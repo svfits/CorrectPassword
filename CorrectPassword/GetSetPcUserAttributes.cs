@@ -13,6 +13,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace CorrectPassword
 {
@@ -46,27 +47,62 @@ namespace CorrectPassword
                     }
                 }
             }
-            throw new Exception("Local IP Address Not Found!");
+            return "";
         }
 
         /// <summary>
         /// список администраторов на пк 
         /// </summary>
         /// <returns></returns>
-        public static List<string> GetLocalAdmin()
+        public static Boolean GetLocalAdmin(string userName, string group)
         {
             DirectoryEntry localMachine = new DirectoryEntry("WinNT://" + Environment.MachineName);
             DirectoryEntry admGroup = localMachine.Children.Find("Администраторы", "group");
             object members = admGroup.Invoke("members", null);
-            List<string> lstUsers = new List<string>();
+
+            //List<string> lstUsers = new List<string>();
 
             foreach (object groupMember in (IEnumerable)members)
             {
                 DirectoryEntry member = new DirectoryEntry(groupMember);
-                lstUsers.Add(member.Name);
+                //lstUsers.Add(member.Name);
+                if(member.Name == userName)
+                {
+                    return true;
+                }
             }
 
-            return lstUsers;
+            return false;
+        }
+
+        public static Boolean addGroup(UserPasswordsDefault defaultLoginUser, string groups)
+        {         
+            DirectoryEntry userGroup = null;
+            string userName = defaultLoginUser.defaultLoginUser;
+            string groupName = groups;
+
+            try
+            {
+                string groupPath = String.Format(CultureInfo.CurrentUICulture, "WinNT://{0}/{1},group", Environment.MachineName, groupName);
+                userGroup = new DirectoryEntry(groupPath);
+
+                if ((null == userGroup) || (true == String.IsNullOrEmpty(userGroup.SchemaClassName)) || (0 != String.Compare(userGroup.SchemaClassName, "group", true, CultureInfo.CurrentUICulture)))
+                {
+                    return false;
+                }
+
+                String userPath = String.Format(CultureInfo.CurrentUICulture, "WinNT://{0},user", userName);
+                userGroup.Invoke("Add", new object[] { userPath });
+                userGroup.CommitChanges();
+                return true;               
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error creating account: {0}", ex.Message);
+                LogLocal.addLocalLog(ex.Message, EventLogEntryType.Error);
+                return false;
+            }         
+
         }
 
         public static Boolean addUser(string password, UserPasswordsDefault defaultLoginUser, string groups)
@@ -87,11 +123,7 @@ namespace CorrectPassword
 
                 user.Save();
 
-                PrincipalContext context2 = new PrincipalContext(ContextType.Machine);
-                GroupPrincipal group = GroupPrincipal.FindByIdentity(context2, groups);
-
-                group.Members.Add(user);
-                group.Save();
+                GetSetPcUserAttributes.addGroup(defaultLoginUser,groups);
 
                 return true;
             }

@@ -103,8 +103,8 @@ namespace CorrectPassword
                 }
             }
 
-            Console.WriteLine("Конец  ");
-            Console.ReadKey();
+           // Console.WriteLine("Конец  ");
+          //  Console.ReadKey();
         }
 
        

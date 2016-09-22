@@ -27,7 +27,6 @@ namespace CorrectPassword.Log
 
             EventLog.WriteEntry(sSource, events, eventsType, 1111);
 
-
         } 
 
     }
